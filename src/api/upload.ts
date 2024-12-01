@@ -1,5 +1,5 @@
-import type { NextApiRequest, NextApiResponse } from "next";
 import routes from "@/src/env/routes";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 const normalizeHeaders = (headers: {
   [key: string]: string | string[] | undefined;
@@ -21,16 +21,17 @@ export default async function handler(
   res: NextApiResponse
 ) {
   if (req.method === "POST") {
-    const processImageUrl = routes.PROCESS_IMAGE;
+    const processImageUrl = routes.NEXT_PUBLIC_PROCESS_IMAGE;
 
     if (!processImageUrl) {
       return res
         .status(500)
-        .json({ error: "PROCESS_IMAGE не настроен в .env" });
+        .json({ error: "NEXT_PUBLIC_PROCESS_IMAGE не настроен в .env" });
     }
 
     try {
       const normalizedHeaders = normalizeHeaders(req.headers);
+      console.log("Отправляемые заголовки:", normalizedHeaders);
 
       const response = await fetch(processImageUrl, {
         method: "POST",
@@ -38,11 +39,15 @@ export default async function handler(
         headers: normalizedHeaders,
       });
 
+      console.log("Ответ от сервера:", response);
+
       if (response.ok) {
         const data = await response.json();
+        console.log("Данные от AI-сервиса:", data);
         res.status(200).json(data);
       } else {
         const errorText = await response.text();
+        console.error("Ошибка от AI-сервиса:", errorText);
         res.status(response.status).json({
           error: `Ошибка от AI-сервиса: ${errorText || "Неизвестная ошибка"}`,
         });

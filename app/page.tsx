@@ -55,7 +55,18 @@ export default function Home() {
     });
 
     try {
-      const response = await fetch("/api/upload", {
+      const processImageUrl = process.env.NEXT_PUBLIC_PROCESS_IMAGE;
+      if (!processImageUrl) {
+        toast({
+          variant: "destructive",
+          title: "Ошибка конфигурации",
+          description:
+            "Переменная окружения NEXT_PUBLIC_PROCESS_IMAGE не настроена.",
+        });
+        return;
+      }
+
+      const response = await fetch(processImageUrl, {
         method: "POST",
         body: formData,
       });
