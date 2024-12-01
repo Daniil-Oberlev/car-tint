@@ -1,0 +1,47 @@
+# Markdown files
+*.md text
+*.mdx text
+
+# CSS/SCSS files
+*.css text
+*.scss text
+
+# TypeScript files
+*.ts text diff=typescript
+*.tsx text diff=typescript
+
+# JSON files
+*.json text
+
+# MJS files (ES Modules)
+*.mjs text
+
+# TypeScript Declaration files
+*.d.ts text
+
+# Указываем, что файлы с расширением ts и tsx - текстовые файлы
+*.ts text
+*.tsx text
+
+# Указываем типы файлов для GitHub
+*.md linguist-language=Markdown
+*.mdx linguist-language=Markdown
+*.css linguist-language=CSS
+*.scss linguist-language=CSS
+*.ts linguist-language=TypeScript
+*.tsx linguist-language=TypeScript
+*.json linguist-language=JSON
+*.mjs linguist-language=JavaScript
+*.d.ts linguist-language=TypeScript
+
+# Для игнорирования зависимостей и компиляций
+node_modules/* export-ignore
+*.js export-ignore
+*.map export-ignore
+*.d.ts export-ignore
+
+# Линтинговые правила для TypeScript и CSS
+*.ts text diff=typescript
+*.tsx text diff=typescript
+*.scss text diff=css
+*.css text diff=css

@@ -1,101 +1,216 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useCallback, useRef, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { UploadButton } from "@/components/atoms/UploadButton";
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const { toast } = useToast();
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [dragging, setDragging] = useState(false);
+  const dragCounter = useRef(0);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  const handleFileDrop = (files: FileList) => {
+    const newFiles = Array.from(files);
+    if (newFiles.length + selectedImages.length > 10) {
+      toast({
+        variant: "destructive",
+        title: "Ошибка",
+        description: "Вы можете загрузить не более 10 изображений.",
+      });
+      return;
+    }
+    const validFiles = newFiles.filter((file) =>
+      ["image/png", "image/jpeg", "image/jpg"].includes(file.type)
+    );
+
+    if (validFiles.length < newFiles.length) {
+      toast({
+        variant: "destructive",
+        title: "Некоторые файлы отклонены",
+        description: "Поддерживаются только PNG, JPG и JPEG.",
+      });
+    }
+
+    setSelectedImages((prevImages) => [...prevImages, ...validFiles]);
+    setDragging(false);
+  };
+
+  const handleUpload = async () => {
+    if (selectedImages.length === 0) {
+      toast({
+        variant: "destructive",
+        title: "Ошибка",
+        description: "Пожалуйста, выберите изображения для загрузки.",
+      });
+      return;
+    }
+
+    setLoading(true);
+    const formData = new FormData();
+    selectedImages.forEach((image, index) => {
+      formData.append(`file_${index}`, image);
+    });
+
+    try {
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          variant: "default",
+          title: "Успех",
+          description: "Изображения обработаны успешно!",
+        });
+        console.log("Ответ от backend:", data);
+      } else {
+        toast({
+          variant: "destructive",
+          title: "Ошибка загрузки",
+          description: "Попробуйте снова.",
+        });
+      }
+    } catch (error) {
+      console.error("Ошибка:", error);
+      toast({
+        variant: "destructive",
+        title: "Произошла ошибка",
+        description: "Произошла ошибка при загрузке изображений.",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleRemoveImage = useCallback((index: number) => {
+    setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  }, []);
+
+  const handleDragEvents = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.type === "dragenter") {
+      dragCounter.current++;
+      setDragging(true);
+    } else if (e.type === "dragleave") {
+      dragCounter.current--;
+      if (dragCounter.current <= 0) {
+        setDragging(false);
+        dragCounter.current = 0;
+      }
+    } else if (e.type === "dragover") {
+      setDragging(true);
+    }
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const files = e.dataTransfer.files;
+    if (files) handleFileDrop(files);
+    dragCounter.current = 0;
+    setDragging(false);
+  };
+
+  useEffect(() => {
+    const handleWindowDragOver = (e: DragEvent) => {
+      e.preventDefault();
+    };
+
+    const handleWindowDrop = () => {
+      setDragging(false);
+      dragCounter.current = 0;
+    };
+
+    window.addEventListener("dragover", handleWindowDragOver);
+    window.addEventListener("drop", handleWindowDrop);
+
+    return () => {
+      window.removeEventListener("dragover", handleWindowDragOver);
+      window.removeEventListener("drop", handleWindowDrop);
+    };
+  }, []);
+
+  return (
+    <div
+      className="flex flex-col min-h-screen relative"
+      onDragEnter={handleDragEvents}
+      onDragOver={handleDragEvents}
+      onDragLeave={handleDragEvents}
+      onDrop={handleDrop}
+    >
+      {dragging && (
+        <div className="absolute inset-0 bg-gray-800 bg-opacity-75 flex items-center justify-center text-white text-lg z-10">
+          <p>Перетащите файлы сюда</p>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
+      )}
+
+      <div className="flex flex-1 flex-col items-center justify-center p-4">
+        <h1 className="text-4xl font-bold text-center mb-6">
+          Добро пожаловать в сервис оценки повреждений автомобиля
+        </h1>
+        <p className="text-lg text-center text-muted-foreground mb-8">
+          Загрузите фото автомобиля, чтобы узнать стоимость кузовного ремонта.
+        </p>
+
+        <div className="border-dashed border-2 border-gray-400 p-6 w-full max-w-lg text-center rounded-lg mb-6 relative">
+          <button
+            className="relative w-full h-full p-6 text-center border-dashed border-2 border-gray-400 rounded-lg cursor-pointer"
+            onClick={(e) => {
+              e.preventDefault();
+              document.querySelector<HTMLInputElement>("#fileInput")?.click();
+            }}
+          >
+            {selectedImages.length > 0 ? (
+              <div className="grid grid-cols-2 gap-2">
+                {selectedImages.map((image, index) => (
+                  <div
+                    key={index}
+                    className="relative border rounded-md p-1 shadow-sm"
+                  >
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt={`Preview ${index + 1}`}
+                      className="max-w-full h-auto rounded"
+                    />
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveImage(index);
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 text-white text-sm px-2 py-1 rounded-full hover:bg-red-600"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p>
+                Перетащите изображения сюда или нажмите, чтобы выбрать файлы
+              </p>
+            )}
+          </button>
+
+          <input
+            id="fileInput"
+            type="file"
+            accept=".png, .jpg, .jpeg"
+            multiple
+            onChange={(e) =>
+              e.target.files ? handleFileDrop(e.target.files) : null
+            }
+            className="hidden"
           />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        </div>
+
+        <UploadButton loading={loading} onClick={handleUpload} />
+      </div>
     </div>
   );
 }
