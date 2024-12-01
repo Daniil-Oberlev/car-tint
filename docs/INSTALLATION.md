@@ -9,12 +9,12 @@
 
 1. Клонируйте репозиторий:
    ```bash
-   git clone https://github.com/Daniil-Oberlev/car-ai.git
+   git clone https://github.com/Daniil-Oberlev/car-tint.git
    ```
 2. Перейдите в каталог проекта:
 
    ```bash
-   cd project
+   cd car-tint
    ```
 
 3. Установите зависимости:
