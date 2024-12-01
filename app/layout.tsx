@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import Script from "next/script";
@@ -53,6 +53,10 @@ export const metadata: Metadata = {
   robots: "index, follow",
 };
 
+export const viewport: Viewport = {
+  colorScheme: "dark",
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -69,7 +73,6 @@ export default function RootLayout({
           src="https://unpkg.com/leaflet/dist/leaflet.js"
           strategy="beforeInteractive"
         />
-        <meta name="theme-color" content="#ffffff" />
         <link rel="icon" href="/favicon.ico" />
         <meta name="robots" content="index, follow" />
       </head>
