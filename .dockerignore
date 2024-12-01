@@ -1,0 +1,28 @@
+# Исключить локальные зависимости и папки сборки
+node_modules
+.next
+out
+dist
+
+# Исключить файлы конфигурации и кэша
+*.env.local
+*.env.development
+*.env.test
+*.env.production
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Исключить временные файлы IDE/редакторов
+.vscode
+.idea
+*.swp
+*.swo
+
+# Исключить системные файлы и кэш
+.DS_Store
+Thumbs.db
+
+# Исключить файлы git
+.git
+.gitignore
