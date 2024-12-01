@@ -138,7 +138,7 @@ export default function Home() {
 
   return (
     <div
-      className="flex flex-col min-h-screen relative"
+      className="flex flex-col relative"
       onDragEnter={handleDragEvents}
       onDragOver={handleDragEvents}
       onDragLeave={handleDragEvents}
@@ -150,7 +150,7 @@ export default function Home() {
         </div>
       )}
 
-      <div className="flex flex-1 flex-col items-center justify-center p-4">
+      <main className="flex flex-1 flex-col items-center justify-center p-4">
         <h1 className="text-4xl font-bold text-center mb-6">
           Добро пожаловать в сервис оценки повреждений автомобиля
         </h1>
@@ -158,7 +158,7 @@ export default function Home() {
           Загрузите фото автомобиля, чтобы узнать стоимость кузовного ремонта.
         </p>
 
-        <div className="border-dashed border-2 border-gray-400 p-6 w-full max-w-lg text-center rounded-lg mb-6 relative">
+        <article className="border-dashed border-2 border-gray-400 p-6 w-full max-w-lg text-center rounded-lg mb-6 relative">
           <button
             className="relative w-full h-full p-6 text-center border-dashed border-2 border-gray-400 rounded-lg cursor-pointer"
             onClick={(e) => {
@@ -207,10 +207,10 @@ export default function Home() {
             }
             className="hidden"
           />
-        </div>
+        </article>
 
         <UploadButton loading={loading} onClick={handleUpload} />
-      </div>
+      </main>
     </div>
   );
 }
