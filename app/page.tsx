@@ -177,8 +177,8 @@ export default function Home() {
                     <Image
                       src={URL.createObjectURL(image)}
                       alt={`Preview ${index + 1}`}
-                      width={150} // Укажите ширину
-                      height={150} // Укажите высоту
+                      width={150}
+                      height={150}
                       className="rounded"
                     />
                     <button
