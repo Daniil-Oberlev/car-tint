@@ -26,3 +26,8 @@ Thumbs.db
 # Исключить файлы git
 .git
 .gitignore
+
+.editorconfig
+LICENSE
+README.md
+docs/

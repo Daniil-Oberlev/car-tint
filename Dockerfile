@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json ./
 
-RUN npm ci
+RUN npm install
 
 COPY . .
 
@@ -15,10 +15,9 @@ FROM node:18-alpine AS runner
 WORKDIR /app
 
 COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/public ./public
 COPY --from=builder /app/package.json ./package.json
 
-RUN npm ci --only=production
+RUN npm install
 
 EXPOSE 3000
 
