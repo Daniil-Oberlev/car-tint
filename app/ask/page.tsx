@@ -1,19 +1,19 @@
 "use client";
 
-import { useForm, FormProvider } from "react-hook-form";
+import { FormProvider, useForm } from "react-hook-form";
 
-import { toast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import {
-  FormField,
   FormControl,
+  FormDescription,
+  FormField,
   FormItem,
   FormLabel,
-  FormDescription,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
 
 interface FormData {
   email: string;
@@ -50,7 +50,6 @@ export default function AskForm() {
       <h2 className="text-xl font-semibold mb-4">Запрос по области</h2>
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Поле для ввода email */}
           <FormField
             control={control}
             name="email"
@@ -74,7 +73,6 @@ export default function AskForm() {
             )}
           />
 
-          {/* Поле для ввода запроса */}
           <FormField
             control={control}
             name="request"

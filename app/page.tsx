@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
 import { UploadButton } from "@/components/atoms/UploadButton";
+import { useToast } from "@/hooks/use-toast";
+import Image from "next/image";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 export default function Home() {
   const { toast } = useToast();
@@ -173,10 +174,12 @@ export default function Home() {
                     key={index}
                     className="relative border rounded-md p-1 shadow-sm"
                   >
-                    <img
+                    <Image
                       src={URL.createObjectURL(image)}
                       alt={`Preview ${index + 1}`}
-                      className="max-w-full h-auto rounded"
+                      width={150} // Укажите ширину
+                      height={150} // Укажите высоту
+                      className="rounded"
                     />
                     <button
                       onClick={(e) => {

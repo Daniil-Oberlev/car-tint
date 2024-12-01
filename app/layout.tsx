@@ -1,7 +1,7 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import localFont from "next/font/local";
-import "./globals.css";
 import Script from "next/script";
+import "./globals.css";
 
 const ralewayFont = localFont({
   src: [
@@ -18,8 +18,8 @@ const ralewayFont = localFont({
   ],
 });
 
-import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
+import { Header } from "@/components/layout/header";
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
@@ -49,12 +49,7 @@ export const metadata: Metadata = {
     title: "Оценка повреждений автомобилей",
     description: "Загрузите фото автомобиля и узнайте стоимость ремонта.",
   },
-  viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0",
   robots: "index, follow",
-};
-
-export const viewport: Viewport = {
-  colorScheme: "dark",
 };
 
 export default function RootLayout({
